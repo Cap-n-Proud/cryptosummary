@@ -1,0 +1,19 @@
+ create : cryptosummary
+   create : cryptosummary/package.json
+   create : cryptosummary/app.js
+   create : cryptosummary/public
+   create : cryptosummary/routes
+   create : cryptosummary/routes/index.js
+   create : cryptosummary/routes/users.js
+   create : cryptosummary/views
+   create : cryptosummary/views/index.pug
+   create : cryptosummary/views/layout.pug
+   create : cryptosummary/views/error.pug
+   create : cryptosummary/bin
+   create : cryptosummary/bin/www
+   create : cryptosummary/public/javascripts
+   create : cryptosummary/public/images
+   create : cryptosummary/public/stylesheets
+   create : cryptosummary/public/stylesheets/style.css
+
+

@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>airlink</title>
+    <link rel="stylesheet" href="foundation/css/foundation.css">
+    <link rel="stylesheet" href="foundation/css/app.css">
+    <script src='/socket.io/socket.io.js'></script>
+
+</head>
+
+<body onload=updateData()>
+    <ul id='messages'></ul>
+
+
+
+    <!-- Grid Example -->
+    <div class="grid-x grid-padding-x">
+        <div class="small-2 cell">
+
+        </div>
+        <div class="small-3 cell" id="ETHUnits">
+            <div id="ETHunits">
+                N/A
+            </div>
+
+        </div>
+        <div class="small-3 cell">
+            <div id="ETHucost">
+                N/A
+            </div>
+        </div>
+
+        <div class="small-3 cell">
+            <div id="ETHval">
+                N/A </div>
+        </div>
+        <div class="small-1 cell">
+
+        </div>
+
+
+
+    </div>
+
+    <!-- Grid Example -->
+
+    <div style="margin-bottom: 2em !important;" class="grid-x grid-padding-x">
+        <div class="small-2 cell">
+
+        </div>
+        <div class="small-3 cell">
+            <div id="BTCunits">
+                N/A
+            </div>
+
+        </div>
+        <div class="small-3 cell">
+            <div class="" id="BTCucost">
+                N/A
+            </div>
+        </div>
+
+        <div class="small-3 cell">
+            <div class="" id="BTCval">
+                N/A </div>
+        </div>
+        <div class="small-1 cell">
+
+        </div>
+
+
+
+    </div>
+
+    <div style="margin-bottom: 1em !important;" class="grid-x grid-padding-x ">
+        <div class="small-12 cell ">
+            <div class="text-center primary callout ">
+                <h1 id="Total">N/A</h1>
+
+            </div>
+
+        </div>
+        <div class="small-12 cell">
+            <div align="center">
+            </div>
+
+        </div>
+        <div class="small-12 cell">
+            <div align="center">
+                <h6 class="small-text subheader" id="Time">N/A</h3>
+            </div>
+
+        </div>
+        <div class="small-12 cell">
+            <div align="center">
+            </div>
+
+        </div>
+        <div class="small-12 cell">
+            <div align="center">
+                <a href="#" class="button round expanded padding" onclick="updateData()"><br><h1><strong>update</h1><br></a>
+
+            </div>
+
+        </div>
+
+
+        <script>
+            var socket = io();
+
+
+
+
+            Number.prototype.formatMoney = function(c, d, t) {
+                var n = this,
+                    c = isNaN(c = Math.abs(c)) ? 2 : c,
+                    d = d == undefined ? "." : d,
+                    t = t == undefined ? "," : t,
+                    s = n < 0 ? "-" : "",
+                    i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+                    j = (j = i.length) > 3 ? j % 3 : 0;
+                return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+            };
+
+            function format(num) {
+                var n = num.toString(),
+                    p = n.indexOf('.');
+                return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, function($0, i) {
+                    return (p < 0 || i < p ? ($0 + ',') : $0);
+                });
+            }
+            var capitalETH, capitalBTC, time;
+
+            function updateTotal() {
+
+                var sum = parseFloat(capitalETH) + parseFloat(capitalBTC);
+                document.getElementById("Total").innerHTML = sum.formatMoney(2, '.', ',');
+                document.getElementById("Time").innerHTML = time;
+
+
+            }
+            socket.on('welcome', function(data) {
+                //addMessage(data.message);
+
+                // Respond with a message including this clients' id sent from the server
+                socket.emit('i am client', {
+                    data: 'foo!',
+                    id: data.id
+                });
+            });
+            socket.on('error', console.error.bind(console));
+            socket.on('message', console.log.bind(console));
+
+            socket.on('ETH', function(data) {
+                capitalETH = parseFloat(data.balance) * parseFloat(data.ucost);
+                document.getElementById("ETHunits").innerHTML = data.balance.formatMoney(2, '.', ',') + ' ' + data.currency;
+                document.getElementById("ETHval").innerHTML = capitalETH.formatMoney(2, '.', ',');
+                document.getElementById("ETHucost").innerHTML = parseFloat(data.ucost).formatMoney(2, '.', ',');
+                time = data.time;
+                updateTotal();
+
+            });
+
+
+            socket.on('XBT', function(data) {
+                capitalBTC = parseFloat(data.balance) * parseFloat(data.ucost);
+                document.getElementById("BTCunits").innerHTML = data.balance.formatMoney(2, '.', ',') + ' ' + data.currency;
+                document.getElementById("BTCval").innerHTML = capitalBTC.formatMoney(2, '.', ',');
+                document.getElementById("BTCucost").innerHTML = parseFloat(data.ucost).formatMoney(2, '.', ',');
+
+            });
+
+            function updateData() {
+                socket.emit('update');
+            }
+        </script>
+
+        <script src="foundation/js/vendor/jquery.js"></script>
+        <script src="foundation/js/vendor/what-input.js"></script>
+        <script src="foundation/js/vendor/foundation.min.js"></script>
+
+        <script>
+            $(document).foundation();
+        </script>
+</body>
+
+</html>
